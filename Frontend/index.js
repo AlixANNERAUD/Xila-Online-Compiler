@@ -2,7 +2,7 @@ let Selected_Item = 0;
 
 const Backend_URL = '';
 
-const Versions_Registry_URL = 'versions_registry.xrf';
+const Versions_Registry_URL = 'https://raw.githubusercontent.com/AlixANNERAUD/Xila/master/Code/lib/Xila/versions_registry.xrf';
 
 class Software {
 
@@ -13,33 +13,23 @@ class Software {
 
 let Softwares = [];
 
-let Versions_Registry = [];
+var Versions_Registry = [];
 
 function Refresh_Version_Registry() {
+
     fetch(Versions_Registry_URL)
         .then(Response => {
-            if (Response.status === 200) {
-                return resp.json();
-            }
-            else {
-                console('Status : ' + Response.status)
-                return Promise.reject("server")
+            if (Response.status == 200) {
+                return Response.json();
             }
         })
         .then(JSON_Data => {
-            let Temporary_Versions_Registry = JSON.parse(JSON_Data);
-            Versions_Registry = [];
-            Versions_Registry = Temporary_Versions_Registry['versions_registry']
-        })
-        .catch(error => {
-            if (error === "server") {
-                return
-            }
-            console.log(error)
-        });
+            Versions_Registry = JSON_Data['Versions_Registry'];
+            Display_Versions();
+            Display_Default_Software();
 
-    Display_Versions();
-    Display_Default_Software();
+        })
+        .catch(error => console.error(error)); 
 }
 
 async function Upload_Software(Index, Request_ID) {
@@ -71,13 +61,12 @@ function Set_Active(Index) {
 function Display_Versions() {
     let Versions = document.getElementById('Xila_Versions');
     Versions.innerHTML = '';
-    console.log(Versions_Registry.length);
     for (var i = 0; i < Versions_Registry.length; i++) {
         let Version = document.createElement('option');
         if (i == 0) {
             Version.selected = true;
         }
-        Version.setAttribute('value', Versions_Registry[i].Version);
+        Version.setAttribute('value', i);
         Version.innerHTML = Versions_Registry[i].Version;
         Versions.appendChild(Version);
     }
@@ -121,10 +110,15 @@ function Display_Additional_Softwares() {
 }
 
 function Display_Default_Software() {
+
     var Division = document.getElementById('Default_Software_Switches_Division');
     Division.innerHTML = '';
 
-    for (var i = 0; i < Default_Software.length; i++) {
+    var Selected_Version = document.getElementById('Xila_Versions').value;
+    
+    document.getElementById('Switch_Select_All_Software').checked = true;
+    
+    for (var i = 0; i < Versions_Registry[Selected_Version].Softwares.length; i++) {
         Inner_Division = document.createElement('div');
         Inner_Division.classList = 'form-check form-switch';
 
@@ -139,7 +133,7 @@ function Display_Default_Software() {
         let Label = document.createElement('label');
         Label.classList = 'form-check-label'
         Label.setAttribute('for', 'Default_Software_Switch_' + i);
-        Label.innerHTML = Default_Software[i];
+        Label.innerHTML = Versions_Registry[Selected_Version].Softwares[i];
 
         Inner_Division.appendChild(Input);
         Inner_Division.appendChild(Label);
@@ -177,7 +171,6 @@ function Start_Request() {
             return resp.json();
         }
         else {
-            console.log("Status: " + resp.status)
             return Promise.reject("server")
         }
     })
@@ -203,6 +196,7 @@ function Toggle_All_Software_Switches(Source) {
 }
 
 function Reset() {
+    document.getElementById('Xila_Versions').selected = 0;
     document.getElementById('Switch_Select_All_Software').checked = true;
     Toggle_All_Software_Switches(document.getElementById('Switch_Select_All_Software'))
     Softwares = [];
@@ -235,8 +229,7 @@ function Compile() {
 
     Print_Line('Step 3 : Upload additional software ...');
     for (let i = 0; i < Softwares.length; i++) {
-        Print_Line('> Software ' + (i + 1) + '/' + Softwares.length + ': Upload ...')
-
+        Print_Line('> Software ' + (i + 1) + '/' + Softwares.length + ': Upload ...');
     }
 
     Print_Line('Step 4 : Start compilation process ....');
@@ -262,6 +255,6 @@ function Cancel() {
 document.addEventListener('readystatechange', event => {
     if (event.target.readyState === 'complete') {
         Refresh_Version_Registry();
-        Display_Additional_Softwares();
+        //Display_Additional_Softwares();
     }
 });

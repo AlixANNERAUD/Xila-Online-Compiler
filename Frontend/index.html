@@ -45,8 +45,6 @@
             Use this online compiler to bundle all software you need for your Xila installation.
         </p>
 
-        <br>
-
         <div class="container">
             <div class="row">
                 <!--1st column-->
@@ -58,7 +56,7 @@
                     <p class="description">
                         Choose the version of Xila:
                     </p>
-                    <select class="form-select" id="Xila_Versions"></select>
+                    <select class="form-select" id="Xila_Versions" onChange="Display_Default_Software()"></select>
                     </select>
                 </div>
 
@@ -118,20 +116,25 @@
                 </div>
             </div>
 
+
+            <div class="btn-group centered" style="padding: 20px" role="group">
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#Offcanvas"
+                    aria-controls="offcanvasScrolling" onclick="Compile()">
+                    <i class="fa-solid fa-gears"></i> Compile
+                </button>
+                <button type="button" class="btn btn-outline-danger" onclick="Reset()">
+                    <i class="fa-solid fa-arrow-rotate-right"></i> Reset
+                </button>
+            </div>
+
         </div>
 
-        <div class="btn-group centered" style="border-top: 2px solid white" role="group">
-            <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#Offcanvas"
-                aria-controls="offcanvasScrolling" onclick="Compile()">
-                <i class="fa-solid fa-gears"></i> Compile
-            </button>
-            <button type="button" class="btn btn-outline-danger" onclick="Reset()">
-                <i class="fa-solid fa-arrow-rotate-right"></i> Reset
-            </button>
-        </div>
+        
+      
 
     </div>
 
+    
 
     <div class="offcanvas offcanvas-bottom" tabindex="-1" id="Offcanvas" aria-labelledby="Offcanvas_Label">
         <div class="offcanvas-header">
